@@ -1,5 +1,6 @@
 package co.com.cetus.learning.microservicio_cliente_contactos.service;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -19,11 +20,11 @@ public class WebFluxService {
         this.webClient = webClient;
     }
 
-    public Mono<Persona> postContacto(Persona persona, String token) {
+    public Mono<Persona> postContacto(Persona persona, HttpHeaders headers) {
         log.info("llegue a Mono<Persona>");
         return webClient.post()
                 .uri("/contactos")
-                .header("Authorization", "Bearer " + token)
+                .headers(t -> t.addAll(headers))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(BodyInserters.fromValue(persona))
                 .retrieve()
@@ -31,11 +32,11 @@ public class WebFluxService {
 
     }
 
-    public Mono<Persona[]> getContactos(String token) {
+    public Mono<Persona[]> getContactos(HttpHeaders headers) {
         log.info("llegue a Mono<Persona[]> lista");
         return webClient.get()
                 .uri("/contactos")
-                .header("Authorization", "Bearer " + token)
+                .headers(t -> t.addAll(headers))
                 .retrieve()
                 .bodyToMono(Persona[].class);
 

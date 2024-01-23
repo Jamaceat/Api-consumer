@@ -4,6 +4,11 @@
 			"name": "external-api.cosumes",
 			"type": "java.lang.String",
 			"description": "A description for 'external-api.cosumes'"
+		},
+		{
+			"name": "external-api.keycloack",
+			"type": "java.lang.String",
+			"description": "A description for 'external-api.keycloack'"
 		}
 	]
 }
