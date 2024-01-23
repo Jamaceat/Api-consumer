@@ -20,6 +20,9 @@ import org.springframework.web.reactive.function.BodyInserter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import co.com.cetus.learning.microservicio_cliente_contactos.service.WebFluxService;
 import co.com.cetus.learning.model.Persona;
 import co.com.cetus.learning.model.ResultAuth;
@@ -46,11 +49,11 @@ public class PersonaController {
     @Value("${external-api.keycloack}")
     String urlAuthenticator;
 
-    private static final String USERNAME = "user1";
-    private static final String PASSWORD_LOGIN = "user1";
+    private static final String USERNAME = "admin";
+    private static final String PASSWORD_LOGIN = "admin";
     private static final String CLIENT_ID = "login";
     private static final String GRANT_TYPE = "password";
-    private HttpHeaders headers;
+    private HttpHeaders headers = new HttpHeaders();
 
     @PostConstruct()
     public void autenticar() {
@@ -65,6 +68,8 @@ public class PersonaController {
         authData.add("username", USERNAME);
         authData.add("password", PASSWORD_LOGIN);
         authData.add("grant_type", GRANT_TYPE);
+        ObjectMapper mapper = new ObjectMapper();
+
         ResponseEntity<ResultAuth> response = authWebClient
                 .post()
                 .uri("")
@@ -72,14 +77,18 @@ public class PersonaController {
                 .retrieve()
                 .bodyToMono(ResultAuth.class)
                 .map(t -> {
+                    // JsonNode rootNode=mapper.readTree(t);
+                    // ResultAuth ra= new ResultAuth(rootNode.get());
                     HttpHeaders responseHeaders = new HttpHeaders();
                     responseHeaders.setContentType(MediaType.APPLICATION_JSON);
                     HttpStatus status = HttpStatus.OK;
                     return new ResponseEntity<ResultAuth>(t, responseHeaders, status);
                 })
                 .block();
-        log.info(response.getBody().getAccessToken());
-        headers.add("Authorization", "Bearer " + response.getBody().getAccessToken());
+        log.info("RESPUESTA JSONWEBTOKEN: " + response.getBody());
+        headers.add("Authorization", "Bearer " + response
+                .getBody().getAccessToken());
+        // response.getBody().getAccessToken());
 
     }
 
